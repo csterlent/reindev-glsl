@@ -1,0 +1,27 @@
+buildscript {
+	repositories {
+        mavenCentral()
+        maven { url 'https://jitpack.io/' }
+    }
+    dependencies {
+        classpath('com.fox2code.FoxLoader:dev:1.3.3')
+    }
+}
+
+apply plugin: 'foxloader.dev'
+
+version '1.1.1'
+
+foxloader {
+    // forceReload = true
+    modId = "glsl"
+    modName = "GLSL shaders"
+    modVersion = project.version
+    modDesc = "GLSL shaders for b1.7.3 backported from r1.3"
+    clientMod = "net.mine_diver.glsl.GLSL"
+    serverMod = ""
+    // Development tools don't like that both client and server define
+    // the same classes, so uncomment to disable the side inclusion.
+    // includeClient = false
+    // includeServer = false
+}
