@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin({WorldRenderer.class})
 public class Mixinclass_66 {
-  @Redirect(method = {"updateRenderer()V"}, at = @At(value = "INVOKE", target = "Lnet/minerenderBlockByRenderType"))
+  @Redirect(method = {"updateRenderer()V"}, at = @At(value = "INVOKE", target = "renderBlockByRenderType"))
   private boolean onRenderBlockByRenderType(RenderBlocks tileRenderer, Block var24, int var17, int var15, int var16) {
     if (Shaders.entityAttrib >= 0)
       ((TessellatorAccessor)Tessellator.instance).setEntity(var24.blockID);

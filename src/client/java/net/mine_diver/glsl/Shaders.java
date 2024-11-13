@@ -691,6 +691,16 @@ public class Shaders {
         GL11.glTexImage2D(3553, 0, 34837, renderWidth, renderHeight, 0, 6408, 5126, buffer);
       } else {
         ByteBuffer buffer = ByteBuffer.allocateDirect(renderWidth * renderHeight * 4);
+        if (i == 0 || i == 3) {
+          for (int ii = 0; ii < renderWidth * renderHeight; ii++) {
+            buffer.put((byte) 0);
+            buffer.put((byte) 0);
+            buffer.put((byte) 0);
+            buffer.put((byte) 26); // related to glAlphaFunc(GL_GREATER, 0.1f)
+          }
+          buffer.flip();  // Prepare the buffer for use in glTexImage2D
+        }
+
         GL11.glTexImage2D(3553, 0, 6408, renderWidth, renderHeight, 0, 6408, 5121, buffer);
       }
     }
