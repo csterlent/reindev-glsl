@@ -428,7 +428,11 @@ public class Shaders {
     setProgramUniform3f("cameraPosition", (float)cameraPosition[0], (float)cameraPosition[1], (float)cameraPosition[2]);
     setProgramUniformMatrix4ARB("gbufferModelView", false, modelView);
     setProgramUniformMatrix4ARB("gbufferModelViewInverse", false, modelViewInverse);
+
+    setProgramUniform1i("systemTime", (int) (System.currentTimeMillis() - start));
   }
+
+  private static long start = System.currentTimeMillis();
 
   public static void setProgramUniform1i(String name, int x) {
     if (activeProgram == 0)
