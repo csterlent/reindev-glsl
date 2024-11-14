@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.ByteBuffer;
+import java.nio.Buffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import net.minecraft.src.game.entity.EntityLiving;
@@ -702,7 +703,7 @@ public class Shaders {
             buffer.put((byte) 0);
             buffer.put((byte) 26); // related to glAlphaFunc(GL_GREATER, 0.1f)
           }
-          buffer.flip();  // Prepare the buffer for use in glTexImage2D
+          ((Buffer) buffer).flip();  // Prepare the buffer for use in glTexImage2D
         }
 
         GL11.glTexImage2D(3553, 0, 6408, renderWidth, renderHeight, 0, 6408, 5121, buffer);

@@ -1,6 +1,7 @@
 package net.mine_diver.glsl.mixin;
 
 import java.nio.ByteBuffer;
+import java.nio.Buffer;
 import java.nio.ShortBuffer;
 import net.mine_diver.glsl.Shaders;
 import net.mine_diver.glsl.util.TessellatorAccessor;
@@ -67,7 +68,7 @@ public class MixinTessellator implements TessellatorAccessor {
 
   @Inject(method = {"reset()V"}, at = {@At("RETURN")})
   private void onReset(CallbackInfo ci) {
-    this.shadersBuffer.clear();
+    ((Buffer) this.shadersBuffer).clear();
   }
 
   @Inject(method = {"addVertex(DDD)V"}, at = {@At("HEAD")})
