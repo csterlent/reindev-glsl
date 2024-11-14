@@ -72,12 +72,12 @@ public class MixinTessellator implements TessellatorAccessor {
 
   @Inject(method = {"addVertex(DDD)V"}, at = {@At("HEAD")})
   private void onAddVertex(CallbackInfo ci) {
-    if (this.drawMode == 7 && true && (this.addedVertices + 1) % 4 == 0 && (isDrawing)) {
-      this.rawBuffer[this.rawBufferIndex + 6] = this.rawBuffer[this.rawBufferIndex - 24 + 6];
-      this.shadersBuffer.putShort(this.shadersData[0]).putShort(this.shadersData[1]);
-      this.rawBuffer[this.rawBufferIndex + 8 + 6] = this.rawBuffer[this.rawBufferIndex + 8 - 16 + 6];
-      this.shadersBuffer.putShort(this.shadersData[0]).putShort(this.shadersData[1]);
-    }
+    // if (this.drawMode == 7 && true && (this.addedVertices + 1) % 4 == 0 && (isDrawing)) {
+    //   this.rawBuffer[this.rawBufferIndex + 6] = this.rawBuffer[this.rawBufferIndex - 24 + 6];
+    //   this.shadersBuffer.putShort(this.shadersData[0]).putShort(this.shadersData[1]);
+    //   this.rawBuffer[this.rawBufferIndex + 8 + 6] = this.rawBuffer[this.rawBufferIndex + 8 - 16 + 6];
+    //   this.shadersBuffer.putShort(this.shadersData[0]).putShort(this.shadersData[1]);
+    // }
     this.shadersBuffer.putShort(this.shadersData[0]).putShort(this.shadersData[1]);
   }
 
