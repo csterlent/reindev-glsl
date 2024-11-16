@@ -9,6 +9,7 @@ import java.nio.ByteBuffer;
 import java.nio.Buffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.util.Stack;
 import net.minecraft.src.game.entity.EntityLiving;
 import net.minecraft.src.game.block.Block;
 import net.minecraft.src.game.item.ItemStack;
@@ -533,8 +534,36 @@ public class Shaders {
       }
     }
     String line;
+
+    Stack<BufferedReader> stack = new Stack<>();
+
     try {
-      while ((line = reader.readLine()) != null) {
+      while ((line = reader.readLine()) != null || !stack.empty()) {
+        if (line == null) {
+          reader = stack.pop();
+          line = reader.readLine();
+          if (line == null) {
+            continue;
+          }
+        }
+        if (line.matches("#include\\s+\"([^\"]+)\"")) {
+          String[] parts = line.split("\"");
+          System.out.println("INCLUDING " + parts[1]);
+          stack.push(reader);
+          String newfile = "shaders/" + parts[1];
+          try {
+            reader = new BufferedReader(new InputStreamReader(Shaders.class.getResourceAsStream(newfile)));
+          } catch (Exception e) {
+            try {
+              reader = new BufferedReader(new FileReader(new File(newfile)));
+            } catch (Exception e2) {
+              System.out.println("Couldn't open " + newfile + "!");
+              GL20.glDeleteShader(vertShader);
+              return 0;
+            }
+          }
+          continue;
+        }
         vertexCode = vertexCode + line + "\n";
         if (line.matches("attribute [_a-zA-Z0-9]+ mc_Entity.*"))
         entityAttrib = 10;
@@ -567,8 +596,36 @@ public class Shaders {
       }
     }
     String line;
+
+    Stack<BufferedReader> stack = new Stack<>();
+
     try {
-      while ((line = reader.readLine()) != null) {
+      while ((line = reader.readLine()) != null || !stack.empty()) {
+        if (line == null) {
+          reader = stack.pop();
+          line = reader.readLine();
+          if (line == null) {
+            continue;
+          }
+        }
+        if (line.matches("#include\\s+\"([^\"]+)\"")) {
+          String[] parts = line.split("\"");
+          System.out.println("INCLUDING " + parts[1]);
+          stack.push(reader);
+          String newfile = "shaders/" + parts[1];
+          try {
+            reader = new BufferedReader(new InputStreamReader(Shaders.class.getResourceAsStream(newfile)));
+          } catch (Exception e) {
+            try {
+              reader = new BufferedReader(new FileReader(new File(newfile)));
+            } catch (Exception e2) {
+              System.out.println("Couldn't open " + newfile + "!");
+              GL20.glDeleteShader(fragShader);
+              return 0;
+            }
+          }
+          continue;
+        }
         fragCode = fragCode + line + "\n";
         if (colorAttachments < 5 && line.matches("uniform [ _a-zA-Z0-9]+ gaux1;.*")) {
           colorAttachments = 5;
