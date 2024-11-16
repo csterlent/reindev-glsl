@@ -363,7 +363,7 @@ public class Shaders {
         GL20.glBindAttribLocation(program, entityAttrib, "mc_Entity");
       GL20.glLinkProgram(program);
       GL20.glValidateProgram(program);
-      printLogInfo(program);
+      printLogInfo(vShaderPath+"fsh", program);
     } else if (program != 0) {
       GL20.glDeleteProgram(program);
       program = 0;
@@ -545,7 +545,7 @@ public class Shaders {
     }
     GL20.glShaderSource(vertShader, vertexCode);
     GL20.glCompileShader(vertShader);
-    printLogInfo(vertShader);
+    printLogInfo(filename, vertShader);
     return vertShader;
   }
 
@@ -613,23 +613,24 @@ public class Shaders {
     }
     GL20.glShaderSource(fragShader, fragCode);
     GL20.glCompileShader(fragShader);
-    printLogInfo(fragShader);
+    printLogInfo(filename, fragShader);
     return fragShader;
   }
 
-  private static boolean printLogInfo(int obj) {
-      // Check if the object is a shader or program
-      int paramType = GL20.glIsShader(obj) ? GL20.GL_COMPILE_STATUS : GL20.GL_LINK_STATUS;
+  private static boolean printLogInfo(String tag, int obj) {
+    // Check if the object is a shader or program
+    int paramType = GL20.glIsShader(obj) ? GL20.GL_COMPILE_STATUS : GL20.GL_LINK_STATUS;
 
-      // Get the compile or link status
-      int status = GL20.glGetProgrami(obj, paramType);
-      if (status == GL11.GL_FALSE) {
-          // Retrieve the info log
-          String log = GL20.glIsShader(obj) ? GL20.glGetShaderInfoLog(obj, 999) : GL20.glGetProgramInfoLog(obj, 999);
-          System.out.println("Info log:\n" + log);
-          return false;
-      }
-      return true;
+    // Get the compile or link status
+    int status = GL20.glGetProgrami(obj, paramType);
+    if (status == GL11.GL_FALSE) {
+      // Retrieve the info log
+      String log = GL20.glIsShader(obj) ? GL20.glGetShaderInfoLog(obj, 999) : GL20.glGetProgramInfoLog(obj, 999);
+      System.out.println(tag);
+      System.out.println("Info log:\n" + log);
+      return false;
+    }
+    return true;
   }
 
   private static void setupFrameBuffer() {
