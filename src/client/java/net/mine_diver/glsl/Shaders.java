@@ -25,6 +25,7 @@ import org.lwjgl.util.glu.GLU;
 public class Shaders {
   public static void init() {
     int maxDrawBuffers = GL11.glGetInteger(34852);
+    System.out.println(GL11.glGetString(GL11.GL_VERSION));
     System.out.println("GL_MAX_DRAW_BUFFERS = " + maxDrawBuffers);
     colorAttachments = 4;
     int i;
@@ -55,7 +56,7 @@ public class Shaders {
   public static void destroy() {
     for (int i = 0; i < 10; i++) {
       if (programs[i] != 0) {
-        ARBShaderObjects.glDeleteObjectARB(programs[i]);
+        GL20.glDeleteProgram(programs[i]);
         programs[i] = 0;
       }
     }
@@ -346,7 +347,7 @@ public class Shaders {
   }
 
   private static int setupProgram(String vShaderPath, String fShaderPath) {
-    int program = ARBShaderObjects.glCreateProgramObjectARB();
+    int program = GL20.glCreateProgram();
     int vShader = 0;
     int fShader = 0;
     if (program != 0) {
@@ -355,16 +356,16 @@ public class Shaders {
     }
     if (vShader != 0 || fShader != 0) {
       if (vShader != 0)
-        ARBShaderObjects.glAttachObjectARB(program, vShader);
+        GL20.glAttachShader(program, vShader);
       if (fShader != 0)
-        ARBShaderObjects.glAttachObjectARB(program, fShader);
+        GL20.glAttachShader(program, fShader);
       if (entityAttrib >= 0)
-        ARBVertexShader.glBindAttribLocationARB(program, entityAttrib, "mc_Entity");
-      ARBShaderObjects.glLinkProgramARB(program);
-      ARBShaderObjects.glValidateProgramARB(program);
+        GL20.glBindAttribLocation(program, entityAttrib, "mc_Entity");
+      GL20.glLinkProgram(program);
+      GL20.glValidateProgram(program);
       printLogInfo(program);
     } else if (program != 0) {
-      ARBShaderObjects.glDeleteObjectARB(program);
+      GL20.glDeleteProgram(program);
       program = 0;
     }
     return program;
@@ -375,11 +376,11 @@ public class Shaders {
       return;
     if (isShadowPass) {
       activeProgram = 0;
-      ARBShaderObjects.glUseProgramObjectARB(programs[0]);
+      GL20.glUseProgram(programs[0]);
       return;
     }
     activeProgram = program;
-    ARBShaderObjects.glUseProgramObjectARB(programs[program]);
+    GL20.glUseProgram(programs[program]);
     if (programs[program] == 0)
       return;
     if (program == 2) {
@@ -401,15 +402,15 @@ public class Shaders {
       setProgramUniform1i("gaux2", 5);
       setProgramUniform1i("gaux3", 6);
       setProgramUniform1i("shadow", 7);
-      setProgramUniformMatrix4ARB("gbufferPreviousProjection", false, previousProjection);
-      setProgramUniformMatrix4ARB("gbufferProjection", false, projection);
-      setProgramUniformMatrix4ARB("gbufferProjectionInverse", false, projectionInverse);
-      setProgramUniformMatrix4ARB("gbufferPreviousModelView", false, previousModelView);
+      setProgramUniformMatrix4("gbufferPreviousProjection", false, previousProjection);
+      setProgramUniformMatrix4("gbufferProjection", false, projection);
+      setProgramUniformMatrix4("gbufferProjectionInverse", false, projectionInverse);
+      setProgramUniformMatrix4("gbufferPreviousModelView", false, previousModelView);
       if (shadowPassInterval > 0) {
-        setProgramUniformMatrix4ARB("shadowProjection", false, shadowProjection);
-        setProgramUniformMatrix4ARB("shadowProjectionInverse", false, shadowProjectionInverse);
-        setProgramUniformMatrix4ARB("shadowModelView", false, shadowModelView);
-        setProgramUniformMatrix4ARB("shadowModelViewInverse", false, shadowModelViewInverse);
+        setProgramUniformMatrix4("shadowProjection", false, shadowProjection);
+        setProgramUniformMatrix4("shadowProjectionInverse", false, shadowProjectionInverse);
+        setProgramUniformMatrix4("shadowModelView", false, shadowModelView);
+        setProgramUniformMatrix4("shadowModelViewInverse", false, shadowModelViewInverse);
       }
     }
     ItemStack stack = mc.thePlayer.inventory.getCurrentItem();
@@ -427,8 +428,8 @@ public class Shaders {
     setProgramUniform3f("moonPosition", moonPosition[0], moonPosition[1], moonPosition[2]);
     setProgramUniform3f("previousCameraPosition", (float)previousCameraPosition[0], (float)previousCameraPosition[1], (float)previousCameraPosition[2]);
     setProgramUniform3f("cameraPosition", (float)cameraPosition[0], (float)cameraPosition[1], (float)cameraPosition[2]);
-    setProgramUniformMatrix4ARB("gbufferModelView", false, modelView);
-    setProgramUniformMatrix4ARB("gbufferModelViewInverse", false, modelViewInverse);
+    setProgramUniformMatrix4("gbufferModelView", false, modelView);
+    setProgramUniformMatrix4("gbufferModelViewInverse", false, modelViewInverse);
 
     setProgramUniform1i("systemTime", (int) (System.currentTimeMillis() - start));
   }
@@ -438,29 +439,29 @@ public class Shaders {
   public static void setProgramUniform1i(String name, int x) {
     if (activeProgram == 0)
       return;
-    int uniform = ARBShaderObjects.glGetUniformLocationARB(programs[activeProgram], name);
-    ARBShaderObjects.glUniform1iARB(uniform, x);
+    int uniform = GL20.glGetUniformLocation(programs[activeProgram], name);
+    GL20.glUniform1i(uniform, x);
   }
 
   public static void setProgramUniform1f(String name, float x) {
     if (activeProgram == 0)
       return;
-    int uniform = ARBShaderObjects.glGetUniformLocationARB(programs[activeProgram], name);
-    ARBShaderObjects.glUniform1fARB(uniform, x);
+    int uniform = GL20.glGetUniformLocation(programs[activeProgram], name);
+    GL20.glUniform1f(uniform, x);
   }
 
   public static void setProgramUniform3f(String name, float x, float y, float z) {
     if (activeProgram == 0)
       return;
-    int uniform = ARBShaderObjects.glGetUniformLocationARB(programs[activeProgram], name);
-    ARBShaderObjects.glUniform3fARB(uniform, x, y, z);
+    int uniform = GL20.glGetUniformLocation(programs[activeProgram], name);
+    GL20.glUniform3f(uniform, x, y, z);
   }
 
-  public static void setProgramUniformMatrix4ARB(String name, boolean transpose, FloatBuffer matrix) {
+  public static void setProgramUniformMatrix4(String name, boolean transpose, FloatBuffer matrix) {
     if (activeProgram == 0 || matrix == null)
       return;
     int uniform = GL20.glGetUniformLocation(programs[activeProgram], name);
-    ARBShaderObjects.glUniformMatrix4ARB(uniform, transpose, matrix);
+    GL20.glUniformMatrix4(uniform, transpose, matrix);
   }
 
   public static void setCelestialPosition() {
@@ -516,7 +517,7 @@ public class Shaders {
 
   private static int createVertShader(String filename) {
     BufferedReader reader;
-    int vertShader = ARBShaderObjects.glCreateShaderObjectARB(35633);
+    int vertShader = GL20.glCreateShader(GL20.GL_VERTEX_SHADER);
     if (vertShader == 0)
       return 0;
     String vertexCode = "";
@@ -527,7 +528,7 @@ public class Shaders {
         reader = new BufferedReader(new FileReader(new File(filename)));
       } catch (Exception e2) {
         System.out.println("Couldn't open " + filename + "!");
-        ARBShaderObjects.glDeleteObjectARB(vertShader);
+        GL20.glDeleteShader(vertShader);
         return 0;
       }
     }
@@ -542,15 +543,15 @@ public class Shaders {
     catch (IOException e) {
       e.printStackTrace();
     }
-    ARBShaderObjects.glShaderSourceARB(vertShader, vertexCode);
-    ARBShaderObjects.glCompileShaderARB(vertShader);
+    GL20.glShaderSource(vertShader, vertexCode);
+    GL20.glCompileShader(vertShader);
     printLogInfo(vertShader);
     return vertShader;
   }
 
   private static int createFragShader(String filename) {
     BufferedReader reader;
-    int fragShader = ARBShaderObjects.glCreateShaderObjectARB(35632);
+    int fragShader = GL20.glCreateShader(GL20.GL_FRAGMENT_SHADER);
     if (fragShader == 0)
       return 0;
     String fragCode = "";
@@ -561,7 +562,7 @@ public class Shaders {
         reader = new BufferedReader(new FileReader(new File(filename)));
       } catch (Exception e2) {
         System.out.println("Couldn't open " + filename + "!");
-        ARBShaderObjects.glDeleteObjectARB(fragShader);
+        GL20.glDeleteShader(fragShader);
         return 0;
       }
     }
@@ -610,27 +611,25 @@ public class Shaders {
     catch (IOException e) {
       e.printStackTrace();
     }
-    ARBShaderObjects.glShaderSourceARB(fragShader, fragCode);
-    ARBShaderObjects.glCompileShaderARB(fragShader);
+    GL20.glShaderSource(fragShader, fragCode);
+    GL20.glCompileShader(fragShader);
     printLogInfo(fragShader);
     return fragShader;
   }
 
   private static boolean printLogInfo(int obj) {
-    IntBuffer iVal = BufferUtils.createIntBuffer(1);
-    ARBShaderObjects.glGetObjectParameterARB(obj, 35716, iVal);
-    int length = iVal.get();
-    if (length > 1) {
-      ByteBuffer infoLog = BufferUtils.createByteBuffer(length);
-      iVal.flip();
-      ARBShaderObjects.glGetInfoLogARB(obj, iVal, infoLog);
-      byte[] infoBytes = new byte[length];
-      infoLog.get(infoBytes);
-      String out = new String(infoBytes);
-      System.out.println("Info log:\n" + out);
-      return false;
-    }
-    return true;
+      // Check if the object is a shader or program
+      int paramType = GL20.glIsShader(obj) ? GL20.GL_COMPILE_STATUS : GL20.GL_LINK_STATUS;
+
+      // Get the compile or link status
+      int status = GL20.glGetProgrami(obj, paramType);
+      if (status == GL11.GL_FALSE) {
+          // Retrieve the info log
+          String log = GL20.glIsShader(obj) ? GL20.glGetShaderInfoLog(obj, 999) : GL20.glGetProgramInfoLog(obj, 999);
+          System.out.println("Info log:\n" + log);
+          return false;
+      }
+      return true;
   }
 
   private static void setupFrameBuffer() {
